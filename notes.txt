@@ -1,0 +1,60 @@
+Create the data schema - By this I mean: decide which tables are needed and what the data types will be for 
+those tables.
+
+The best way to represent a many-to-many relationship in SQL is with a linking table, and this instance will
+be no different!
+
+The restaurant table:
+
+column - id, name, price
+type - serial, varchar(80), int
+
+The cuisine table:
+
+column - restaurant_id, kind
+type - int, varchar(40)
+
+The serial type is a special PostgreSQL type that automatically creates an incrementing unique
+integer in that field. 
+
+The restaurant_id_seq entry is something that PostgreSQL adds automatically to keep track of the
+serial type.
+
+test_insert = "INSERT INTO restaurant (name, price) VALUES ('Test Restaurant', 3) RETURNING id"
+
+Changes you make to the database don't take effect until you've executed the .commit() method of
+the connection object. 
+
+conn.commit()
+
+insert_statement = "INSERT INTO restaurant (name, price) VALUES (%s, %s) RETURNING id"
+
+"Note that this variety of [parameters] is a special syntax supported only by the [cursor.execute()] function.
+It bears superficial similarity to Python string formatting, but is actually its own beast entirely.)
+
+cuisine_insert = "INSERT INTO cuisine (restaurant_id, kind) VALUES (%s, %s)"
+
+Note that in this case, we don't need the [RETURNING] clause in the [INSERT] statement, because we don't
+need any data back from SQL after the row has been inserted (the [cuisine] table doesn't have a serial [id]
+field, so there's no information to get back). 
+
+cuisine_join = """SELECT restaurant.name, cuisine.kind FROM cuisine JOIN restaurant ON restaurant.id = cuisine.restaurant_id"""
+
+The Delete From table
+
+"DELETE FROM table" - Delete all records in the table
+
+The [UPDATE] statement is sort of like a cross between a [SELECT] statement and an [INSERT] statement. You specify which
+fields you want to update, and what values you want to update them with, and then you specify which records should be
+updated in this manner. 
+
+UPDATE table
+SET col1 = val1, col2 = val2, col3 = val3
+WHERE expr
+
+colN and valN are the column names whose values you want to update and the values you want those columns to be set to.
+
+[expr] is a SQL expression specifying which records should be updated.
+
+update_name = """UPDATE restaurant SET name = %s WHERE name = %s"""
+
